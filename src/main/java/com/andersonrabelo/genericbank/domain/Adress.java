@@ -1,10 +1,11 @@
 package com.andersonrabelo.genericbank.domain;
 
 import java.io.Serializable;
-import java.util.InputMismatchException;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.andersonrabelo.genericbank.exceptions.AdressFormatException;
 
 @Document
 public class Adress implements Serializable {
@@ -15,7 +16,9 @@ public class Adress implements Serializable {
 	private String street;
 	private Integer number;
 	private String neighborhood;
+	private String city;
 	private String state;
+	private String country;
 	private String complement;
 	private String cep;
 	
@@ -23,7 +26,7 @@ public class Adress implements Serializable {
 		
 	}
 
-	public Adress(String id, String street, Integer number, String neighborhood, String state, String complement, String cep) {
+	public Adress(String id, String street, Integer number, String neighborhood, String city, String state, String country, String complement, String cep) {
 		
 		cepValidate(cep);
 		
@@ -31,7 +34,9 @@ public class Adress implements Serializable {
 		this.street = street;
 		this.number = number;
 		this.neighborhood = neighborhood;
+		this.city = city;
 		this.state = state;
+		this.country = country;
 		this.complement = complement;
 		this.cep = cep;
 	}
@@ -50,6 +55,16 @@ public class Adress implements Serializable {
 
 	public void setStreet(String street) {
 		this.street = street;
+	}
+	
+	
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
 	}
 
 	public Integer getNumber() {
@@ -74,6 +89,14 @@ public class Adress implements Serializable {
 
 	public void setState(String state) {
 		this.state = state;
+	}
+	
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
 	}
 
 	public String getComplement() {
@@ -117,19 +140,19 @@ public class Adress implements Serializable {
 		return true;
 	}
 	
-	public boolean cepValidate(String cep) {
+	public static void cepValidate(String cep) {
 		if (cep.length() != 9) {
-			throw new InputMismatchException("O formato correto do CEP é: 00000-000");
+			throw new AdressFormatException("O formato correto do CEP é: 00000-000");
 		}
 		if (!cep.contains("-")) {
-			throw new InputMismatchException("O formato correto do CEP é: 00000-000");
+			throw new AdressFormatException("O formato correto do CEP é: 00000-000");
 		}
 		
 		String[] numCep = cep.split("-");
 		
 		if(numCep[0].length() != 5 || numCep[1].length() != 3 ) {
-			throw new InputMismatchException("O formato correto do CEP é: 00000-000");
+			throw new AdressFormatException("O formato correto do CEP é: 00000-000");
 		}
-		return true;
+		
 	}
 }
