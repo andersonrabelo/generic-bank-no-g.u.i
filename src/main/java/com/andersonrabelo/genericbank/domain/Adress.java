@@ -26,7 +26,9 @@ public class Adress implements Serializable {
 		
 	}
 
-	public Adress(String id, String street, Integer number, String neighborhood, String city, String state, String country, String complement, String cep) {
+	public Adress(String id, String street, Integer number, 
+			String neighborhood, String city, String state, 
+			String country, String complement, String cep) {
 		
 		cepValidate(cep);
 		

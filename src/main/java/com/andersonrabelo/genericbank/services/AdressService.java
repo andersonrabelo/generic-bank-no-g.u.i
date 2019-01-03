@@ -28,4 +28,27 @@ public class AdressService {
 	public Adress insert(Adress obj) {
 		return repository.insert(obj);
 	}
+	
+	public void delete(String id) {
+		findById(id);
+		repository.deleteById(id);
+	}
+	
+	public Adress update(Adress obj) {
+		Adress newObj = findById(obj.getId());
+		updateData(newObj, obj);
+		return repository.save(newObj);
+		}
+
+	private void updateData(Adress newObj, Adress obj) {
+		newObj.setStreet(obj.getStreet());
+		newObj.setNumber(obj.getNumber());
+		newObj.setNeighborhood(obj.getNeighborhood());
+		newObj.setCity(obj.getCity());
+		newObj.setState(obj.getState());
+		newObj.setCountry(obj.getCountry());
+		newObj.setComplement(obj.getComplement());
+		newObj.setCep(obj.getCep());
+		
+	}
 }
