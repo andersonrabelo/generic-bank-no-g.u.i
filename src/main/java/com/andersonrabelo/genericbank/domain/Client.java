@@ -31,6 +31,8 @@ public class Client implements Serializable {
 	public Client(String id, String name, Date birthDate, String rg, String cpf, Adress adress, String job,
 			Double averageIncome) {
 
+		validateCPF(cpf);
+
 		this.id = id;
 		this.name = name;
 		this.birthDate = birthDate;
@@ -148,80 +150,43 @@ public class Client implements Serializable {
 
 		}
 
+		if (!validateDigit(cpf)) {
+			throw new DocumentFormatException("CPF invalido!");
+		}
+
 	}
 
-	public static boolean validateDigit(String cpf) {
-		List<Integer> linha1 = new ArrayList<>();
-		int[][] mat1 = new int[3][9];
-		int[][] mat2 = new int[3][10];
+	public static boolean validateDigit(String cpf) { 
+		List<Integer> list = new ArrayList<>();
 
-		for (int i = 0; i < 11; i++) {
-			if (i != 3 || i != 7) {
-				linha1.add(Integer.parseInt(cpf.substring(i)));
+		for (int i = 0; i<11; i++) 
+		{
+			if (i != 3 || i != 7) list.add(Integer.parseInt(cpf.substring(i, i)));
+		}
+		
+		//-------------------------
+		for(int i=0; i<2; i++) {
+			
+			int cont = list.size() + 1;
+			int sum = 0;
+			for(Integer e: list) {
+				int x = e*cont;
+				sum += x;
+				
+				cont--;
 			}
+			sum = sum % 11;
+			
+			if(sum >= 2) list.add(11 - sum);
+			else list.add(0);
 		}
 
-		for (int e : linha1) {
-			int i = 0;
-			mat1[0][i] = e;
-			i++;
-		}
-
-		for (int i = 0; i < 9; i++)
-			mat1[1][i] = 10 - i;
-
-		for (int i = 0; i < 9; i++)
-			mat1[2][i] = mat1[0][i] * mat1[1][i];
-
-		int sum = 0;
-
-		for (int i = 0; i < 9; i++) {
-
-			sum += mat1[2][i];
-		}
-
-		int newDig = sum % 11;
-
-		if (newDig < 2) {
-			linha1.add(0);
-		} else {
-			linha1.add(11 - newDig);
-		}
-
-		for (int e : linha1) {
-			int i = 0;
-			mat2[0][i] = e;
-			i++;
-		}
-
-		for (int i = 0; i < 10; i++)
-			mat2[1][i] = 11 - i;
-
-		for (int i = 0; i < 10; i++)
-			mat2[2][i] = mat2[0][i] * mat1[1][i];
-
-		sum = 0;
-
-		for (int i = 0; i < 10; i++) {
-
-			sum += mat2[2][i];
-		}
-
-		newDig = sum % 11;
-		
-		if(newDig < 2) {
-			linha1.add(0);
-		} else {
-			linha1.add(11 - newDig);
-		}
-		
-		if(Integer.parseInt(cpf.substring(12)) == linha1.get(9)
-		&& Integer.parseInt(cpf.substring(13)) == linha1.get(10)) {
+		//-----------------------------------------------------------
+		if(Integer.parseInt(cpf.substring(13, 13)) == list.get(10) 
+		&& Integer.parseInt(cpf.substring(14, 14)) == list.get(11)) {
 			return true;
 		}
 		else return false;
-
-		
 	}
 
 }
