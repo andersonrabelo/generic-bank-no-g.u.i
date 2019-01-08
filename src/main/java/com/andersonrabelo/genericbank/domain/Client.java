@@ -28,10 +28,11 @@ public class Client implements Serializable {
 
 	}
 
-	public Client(String id, String name, Date birthDate, String rg, String cpf, Adress adress, String job,
-			Double averageIncome) {
+	public Client(String id, String name, Date birthDate, String rg, 
+			String cpf, Adress adress, String job, Double averageIncome) {
 
 		validateCPF(cpf);
+		validateRG(rg);
 
 		this.id = id;
 		this.name = name;
@@ -150,43 +151,103 @@ public class Client implements Serializable {
 
 		}
 
-		if (!validateDigit(cpf)) {
+		if (!validateCPFDigit(cpf)) {
 			throw new DocumentFormatException("CPF invalido!");
+		}
+	}
+
+	public static void validateRG(String rg) {
+
+		if (rg.length() != 9) {
+			throw new DocumentFormatException("O formato correto do RG é: 00000000-0");
+		}
+		if (!rg.contains("-")) {
+			throw new DocumentFormatException("O formato correto do RG é: 00000000-0");
+		}
+
+		String[] digRG = rg.split("-");
+
+		if (digRG[0].length() != 7 || digRG[1].length() != 1) {
+			throw new DocumentFormatException("O formato correto do RG é: 00000000-0");
+
+		}
+
+		if (!validateRGDigit(rg)) {
+			throw new DocumentFormatException("RG invalido!");
 		}
 
 	}
 
-	public static boolean validateDigit(String cpf) { 
+	private static boolean validateRGDigit(String rg) {
 		List<Integer> list = new ArrayList<>();
 
-		for (int i = 0; i<11; i++) 
-		{
-			if (i != 3 || i != 7) list.add(Integer.parseInt(cpf.substring(i, i)));
+		for (int i = 0; i < rg.length(); i++) {
+			if (rg.toUpperCase().charAt(i) == 'X') {
+				list.add(0);
+			} else if (rg.charAt(i) != '-') {
+				list.add(Integer.parseInt(rg.substring(i, i + 1)));
+			}
 		}
 		
-		//-------------------------
-		for(int i=0; i<2; i++) {
-			
-			int cont = list.size() + 1;
+		while (list.size() < 9) {
+			list.add(0, 0);
+		}
+
+		int cont = 9;
+		int sum = 0;
+		for (int i = 0; i < (list.size() - 1); i++) {
+			int x = list.get(i) * cont;
+			sum += x;
+
+			cont--;
+		}
+		sum = sum % 11;
+
+		if (sum <= 1)
+			list.add(0);
+		else
+			list.add(11 - sum);
+
+		if (list.get(8) == list.get(9)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	//----------------------------------------------------------
+	public static boolean validateCPFDigit(String cpf) {
+		List<Integer> list = new ArrayList<>();
+
+		for (int i = 0; i < 14; i++) {
+			if (cpf.charAt(i) == '.') {}
+			else if (cpf.charAt(i) == '-') {}
+			else {
+				list.add(Integer.parseInt(cpf.substring(i, i + 1)));
+			}
+		}
+
+		for (int i = 0; i < 2; i++) {
+
 			int sum = 0;
-			for(Integer e: list) {
-				int x = e*cont;
+			int cont = 10 + i;
+			for(int j=0; j<(list.size()-2); j++) {
+				int x = list.get(j)*cont;
 				sum += x;
 				
 				cont--;
 			}
-			sum = sum % 11;
 			
-			if(sum >= 2) list.add(11 - sum);
-			else list.add(0);
+			sum = sum % 11;
+
+			if (sum <= 2) list.add(0);
+			else list.add(11 - sum);
 		}
 
-		//-----------------------------------------------------------
-		if(Integer.parseInt(cpf.substring(13, 13)) == list.get(10) 
-		&& Integer.parseInt(cpf.substring(14, 14)) == list.get(11)) {
+		if (list.get(9) == list.get(11) && list.get(10) == list.get(12)) {
 			return true;
+		} else {
+			return false;
 		}
-		else return false;
 	}
-
 }
