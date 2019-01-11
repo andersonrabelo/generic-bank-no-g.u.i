@@ -134,6 +134,7 @@ public class Client implements Serializable {
 		return true;
 	}
 
+	//-------------------------------------------
 	public static void validateCPF(String cpf) {
 
 		if (cpf.length() != 14) {
@@ -146,7 +147,7 @@ public class Client implements Serializable {
 		String[] numCPF = cpf.split(".");
 		String[] digCPF = numCPF[2].split("-");
 
-		if (numCPF[0].length() != 3 || numCPF[0].length() != 3 || digCPF[0].length() != 3 || digCPF[1].length() != 2) {
+		if (numCPF[0].length() != 3 || numCPF[1].length() != 3 || digCPF[0].length() != 3 || digCPF[1].length() != 2) {
 			throw new DocumentFormatException("O formato correto do CPF é: 000.000.000-00");
 
 		}
@@ -156,9 +157,10 @@ public class Client implements Serializable {
 		}
 	}
 
+	//-----------------------------------------
 	public static void validateRG(String rg) {
 
-		if (rg.length() != 9) {
+		if (rg.length() > 10 || rg.length() < 8) {
 			throw new DocumentFormatException("O formato correto do RG é: 00000000-0");
 		}
 		if (!rg.contains("-")) {
@@ -167,7 +169,7 @@ public class Client implements Serializable {
 
 		String[] digRG = rg.split("-");
 
-		if (digRG[0].length() != 7 || digRG[1].length() != 1) {
+		if (digRG[0].length() < 7 || digRG[0].length() > 8 || digRG[1].length() != 1) {
 			throw new DocumentFormatException("O formato correto do RG é: 00000000-0");
 
 		}
@@ -178,6 +180,7 @@ public class Client implements Serializable {
 
 	}
 
+	//-------------------------------------------------
 	private static boolean validateRGDigit(String rg) {
 		List<Integer> list = new ArrayList<>();
 
@@ -215,16 +218,15 @@ public class Client implements Serializable {
 		}
 	}
 	
-	//----------------------------------------------------------
+	//---------------------------------------------------
 	public static boolean validateCPFDigit(String cpf) {
 		List<Integer> list = new ArrayList<>();
+		
+		cpf = cpf.replace('.', '-');
+		cpf = cpf.replaceAll("-", "");
 
-		for (int i = 0; i < 14; i++) {
-			if (cpf.charAt(i) == '.') {}
-			else if (cpf.charAt(i) == '-') {}
-			else {
-				list.add(Integer.parseInt(cpf.substring(i, i + 1)));
-			}
+		for (int i = 0; i < 11; i++) {
+			list.add(Integer.parseInt(cpf.substring(i, i + 1)));
 		}
 
 		for (int i = 0; i < 2; i++) {
